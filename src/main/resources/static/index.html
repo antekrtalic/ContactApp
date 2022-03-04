@@ -12,8 +12,41 @@
     </form>
 </body>
 <script>
+    function convertFormToJSON(form) {
+        const array = $(form).serializeArray(); // Encodes the set of form elements as an array of names and values.
+        const json = {};
+        $.each(array, function () {
+            json[this.name] = this.value || "";
+        });
+        return json;
+    }
 
+    $("#contact-form").on("submit", function (e) {
+        e.preventDefault();
+        const myForm = document.getElementById('contact-form');
+        let formData = new FormData(myForm);
+        let jsonData = {};
 
+        for (const entry of formData.entries()) {
+            jsonData[entry[0]] = entry[1];
+        }
+        jsonData = JSON.stringify(jsonData)
+        console.log('>>> json: ', jsonData);
+
+        const url = 'http://localhost:8080/rest/add';
+
+        $.ajax({
+            url: url,
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            type: "POST",
+            data: jsonData,
+            success: function (reply) {
+                console.log('POST reply: ', reply);
+            }
+        });
+
+    });
 </script>
 
 </html>
